@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- ══════════════════════════════════════
+       ✏️  基本信息 — 在这里修改你的名字和描述
+  ══════════════════════════════════════ -->
+  <title>你的名字 · 音乐制作人</title>
+  <meta name="description" content="音乐制作人 · 视频配乐 · 音乐科技"/>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:#000;
+      color:#fff;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    .page{display:none;min-height:100vh;flex-direction:column;}
+    .page.on{display:flex;}
+    .dpage{background:#000;display:none;flex-direction:column;min-height:100vh;}
+    .dpage.on{display:flex;}
+
+    /* ── NAV ── */
+    .nav{
+      position:absolute;top:0;left:0;right:0;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:28px 40px;
+      z-index:50;
+    }
+    .nav-logo{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:22px;letter-spacing:0.12em;
+      color:#fff;cursor:pointer;
+    }
+    .nav-links{display:flex;gap:32px;list-style:none;}
+    .nav-links a{
+      font-size:12px;font-weight:400;
+      letter-spacing:0.12em;text-transform:uppercase;
+      color:rgba(255,255,255,0.5);
+      text-decoration:none;cursor:pointer;
+      transition:color 0.2s;
+    }
+    .nav-links a:hover{color:#fff;}
+
+    /* ── LANDING ── */
+    #L{
+      position:relative;
+      justify-content:flex-end;
+      align-items:flex-start;
+      min-height:100vh;
+      overflow:hidden;
+    }
+    .l-bg{position:absolute;inset:0;background:#0a0a0a;overflow:hidden;}
+    .waveform{position:absolute;bottom:0;left:0;right:0;height:100%;opacity:0.18;}
+    .l-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(0,0,0,0.2) 50%,rgba(0,0,0,0.5) 100%);
+    }
+    .l-content{position:relative;z-index:10;padding:0 40px 60px;width:100%;}
+    .l-eyebrow{
+      font-size:11px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;
+      color:rgba(255,255,255,0.4);margin-bottom:16px;
+    }
+    .l-name{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(72px,12vw,140px);
+      line-height:0.92;letter-spacing:0.02em;
+      color:#fff;margin-bottom:24px;
+    }
+    .l-desc{
+      font-size:14px;font-weight:300;
+      color:rgba(255,255,255,0.55);letter-spacing:0.04em;
+      margin-bottom:40px;max-width:380px;line-height:1.7;
+    }
+    .btn-enter{
+      display:inline-flex;align-items:center;gap:12px;
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.3);
+      color:#fff;padding:14px 28px;
+      font-family:'DM Sans',sans-serif;
+      font-size:12px;font-weight:400;
+      letter-spacing:0.15em;text-transform:uppercase;
+      cursor:pointer;transition:border-color 0.2s,background 0.2s;
+    }
+    .btn-enter:hover{border-color:#fff;background:rgba(255,255,255,0.06);}
+
+    /* ── HUB ── */
+    .hub-nav{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:28px 40px;
+      border-bottom:1px solid rgba(255,255,255,0.07);
+    }
+    .hub-grid{
+      flex:1;display:grid;
+      grid-template-columns:repeat(3,1fr);
+      grid-template-rows:1fr 1fr;
+    }
+    .hcard{
+      position:relative;overflow:hidden;cursor:pointer;
+      border:0.5px solid rgba(255,255,255,0.05);
+      min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;
+    }
+    .hcard-bg{position:absolute;inset:0;background:#111;transition:transform 0.6s ease;}
+    .hcard:hover .hcard-bg{transform:scale(1.04);}
+    .hcard-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.1) 60%);
+      transition:opacity 0.3s;
+    }
+    .hcard:hover .hcard-overlay{opacity:0.7;}
+    .hcard-content{position:relative;z-index:2;padding:24px 28px;}
+    .hcard-label{
+      font-size:10px;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;
+      color:rgba(255,255,255,0.35);margin-bottom:8px;
+    }
+    .hcard-title{
+      font-family:'Bebas Neue',sans-serif;font-size:32px;
+      letter-spacing:0.06em;color:#fff;line-height:1;margin-bottom:6px;
+    }
+    .hcard-sub{font-size:12px;font-weight:300;color:rgba(255,255,255,0.4);letter-spacing:0.03em;}
+    .hcard-arrow{
+      position:absolute;top:20px;right:20px;z-index:2;
+      width:32px;height:32px;
+      border:1px solid rgba(255,255,255,0.15);
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;color:rgba(255,255,255,0.4);
+      transition:border-color 0.2s,color 0.2s,transform 0.2s;
+    }
+    .hcard:hover .hcard-arrow{border-color:rgba(255,255,255,0.5);color:#fff;transform:translate(2px,-2px);}
+    .hcard.span2{grid-column:span 2;}
+    .hcard-accent{position:absolute;top:0;left:0;right:0;height:1px;}
+
+    /* ── DETAIL SHARED ── */
+    .d-nav{
+      display:flex;align-items:center;gap:20px;
+      padding:28px 40px;
+      border-bottom:1px solid rgba(255,255,255,0.07);
+    }
+    .d-back{
+      background:transparent;border:1px solid rgba(255,255,255,0.15);
+      color:rgba(255,255,255,0.6);padding:8px 16px;
+      font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;
+      letter-spacing:0.12em;text-transform:uppercase;
+      cursor:pointer;transition:border-color 0.2s,color 0.2s;
+    }
+    .d-back:hover{border-color:rgba(255,255,255,0.4);color:#fff;}
+    .d-breadcrumb{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.25);}
+
+    /* ── WORKS ── */
+    .works-hero{
+      position:relative;height:60vh;overflow:hidden;
+      display:flex;align-items:flex-end;
+    }
+    .works-video-bg{
+      position:absolute;inset:0;background:#0d0d0d;
+      display:flex;align-items:center;justify-content:center;
+    }
+
+    /* 视频全屏铺底 */
+    .works-video-bg video{
+      position:absolute;inset:0;
+      width:100%;height:100%;object-fit:cover;
+      opacity:0.6;
+    }
+    .video-placeholder{
+      display:flex;flex-direction:column;align-items:center;gap:12px;
+      position:relative;z-index:1;
+    }
+    .play-ring{
+      width:64px;height:64px;border:1px solid rgba(255,255,255,0.2);border-radius:50%;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;
+      transition:border-color 0.2s;
+    }
+    .play-ring:hover{border-color:rgba(255,255,255,0.6);}
+    .play-ring svg{width:18px;height:18px;fill:rgba(255,255,255,0.5);}
+    .works-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(0,0,0,0.1) 60%);
+    }
+    .works-hero-text{position:relative;z-index:2;padding:32px 40px;width:100%;}
+    .now-playing{
+      display:flex;align-items:center;gap:8px;
+      font-size:10px;letter-spacing:0.15em;text-transform:uppercase;
+      color:rgba(255,255,255,0.4);margin-bottom:12px;
+    }
+    .pulse{width:6px;height:6px;border-radius:50%;background:#e74c3c;animation:pulse 1.5s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+    .works-hero-title{
+      font-family:'Bebas Neue',sans-serif;font-size:56px;
+      letter-spacing:0.04em;color:#fff;margin-bottom:8px;
+    }
+    .works-hero-meta{font-size:12px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;}
+    .works-list{display:flex;flex-direction:column;}
+    .work-row{
+      display:flex;align-items:center;padding:20px 40px;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      cursor:pointer;transition:background 0.15s;gap:24px;
+    }
+    .work-row:hover{background:rgba(255,255,255,0.03);}
+    .work-num{font-size:12px;color:rgba(255,255,255,0.2);font-weight:300;width:24px;flex-shrink:0;}
+    .work-thumb-sm{
+      width:56px;height:40px;background:#1a1a1a;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;font-size:18px;
+    }
+    .work-info-sm{flex:1;}
+    .work-title-sm{font-size:15px;font-weight:400;color:#fff;margin-bottom:3px;}
+    .work-tag{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+    .work-dur{font-size:12px;color:rgba(255,255,255,0.25);font-weight:300;}
+    .work-play-btn{
+      width:32px;height:32px;border:1px solid rgba(255,255,255,0.12);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      cursor:pointer;transition:border-color 0.2s;
+    }
+    .work-play-btn:hover{border-color:rgba(255,255,255,0.4);}
+    .work-play-btn svg{width:10px;height:10px;fill:rgba(255,255,255,0.4);}
+
+    /* ── TEXT PAGES ── */
+    .txt-hero{
+      position:relative;height:45vh;overflow:hidden;
+      display:flex;align-items:flex-end;
+    }
+    .txt-bg{
+      position:absolute;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(100px,18vw,200px);
+      color:rgba(255,255,255,0.03);letter-spacing:0.05em;
+      user-select:none;white-space:nowrap;
+    }
+    .txt-overlay2{position:absolute;inset:0;background:linear-gradient(to top,#000 0%,transparent 60%);}
+    .txt-hero-content{position:relative;z-index:2;padding:32px 40px;width:100%;}
+    .txt-hero-label{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px;}
+    .txt-hero-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:0.04em;color:#fff;}
+    .txt-body{padding:48px 40px;max-width:700px;}
+    .txt-p{font-size:16px;font-weight:300;color:rgba(255,255,255,0.6);line-height:1.8;margin-bottom:24px;}
+    .txt-p em{color:rgba(255,255,255,0.9);font-style:normal;font-weight:400;}
+
+    /* ── TIMELINE ── */
+    .tl-item2{
+      display:grid;grid-template-columns:100px 1fr;
+      gap:24px;padding:28px 0;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .tl-yr{font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:0.1em;padding-top:3px;}
+    .tl-r{font-size:16px;font-weight:400;color:#fff;margin-bottom:4px;}
+    .tl-p{font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:8px;letter-spacing:0.03em;}
+    .tl-d{font-size:13px;color:rgba(255,255,255,0.4);line-height:1.65;}
+
+    /* ── HOBBIES ── */
+    .hobby-g{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);}
+    .hob{background:#000;padding:32px 36px;}
+    .hob-icon{font-size:22px;margin-bottom:14px;display:block;}
+    .hob-n{font-size:15px;font-weight:400;color:#fff;margin-bottom:6px;}
+    .hob-d{font-size:13px;color:rgba(255,255,255,0.35);line-height:1.55;}
+
+    /* ── CONTACT ── */
+    .clink2{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:22px 40px;border-bottom:1px solid rgba(255,255,255,0.06);
+      cursor:pointer;transition:background 0.15s;
+    }
+    .clink2:hover{background:rgba(255,255,255,0.03);}
+    .clink2-l{display:flex;align-items:center;gap:16px;}
+    .clink2-ic{font-size:16px;width:28px;}
+    .clink2-lb{font-size:14px;font-weight:400;color:#fff;}
+    .clink2-vl{font-size:12px;color:rgba(255,255,255,0.3);margin-top:2px;}
+    .clink2-arr{font-size:16px;color:rgba(255,255,255,0.2);}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px){
+      .nav{padding:20px 24px;}
+      .nav-links{gap:16px;}
+      .l-content{padding:0 24px 48px;}
+      .hub-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
+      .hcard.span2{grid-column:span 2;}
+      .d-nav,.works-hero-text,.txt-hero-content,.txt-body{padding-left:24px;padding-right:24px;}
+      .work-row,.clink2{padding-left:24px;padding-right:24px;}
+      .hobby-g{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     欢迎页 LANDING
+     ✏️ 修改：名字、职业描述、缩写Logo
+══════════════════════════════════════ -->
+<div class="page on" id="L">
+  <div class="l-bg">
+    <svg class="waveform" viewBox="0 0 1200 600" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#fff" stroke-width="1" fill="none">
+        <polyline points="0,300 20,280 40,240 60,290 80,200 100,310 120,260 140,180 160,300 180,250 200,320 220,270 240,220 260,300 280,240 300,280 320,190 340,310 360,260 380,300 400,220 420,290 440,250 460,310 480,230 500,280 520,200 540,310 560,260 580,300 600,220 620,280 640,250 660,310 680,230 700,280 720,200 740,300 760,260 780,290 800,220 820,310 840,270 860,300 880,240 900,290 920,260 940,310 960,230 980,280 1000,200 1020,310 1040,260 1060,300 1080,220 1100,280 1120,250 1140,310 1160,230 1180,280 1200,300"/>
+        <polyline points="0,320 30,290 60,340 90,270 120,350 150,290 180,330 210,280 240,340 270,300 300,350 330,280 360,330 390,290 420,340 450,280 480,330 510,290 540,340 570,280 600,330 630,290 660,340 690,280 720,330 750,290 780,340 810,280 840,330 870,290 900,340 930,280 960,330 990,290 1020,340 1050,280 1080,330 1110,290 1140,340 1170,280 1200,320"/>
+      </g>
+    </svg>
+    <div class="l-overlay"></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-logo" onclick="go('H')">YN</div><!-- ✏️ 改成你名字缩写 -->
+    <ul class="nav-links">
+      <li><a onclick="go('W')">作品</a></li>
+      <li><a onclick="go('A')">关于</a></li>
+      <li><a onclick="go('E')">经历</a></li>
+      <li><a onclick="go('C')">联系</a></li>
+    </ul>
+  </nav>
+  <div class="l-content">
+    <p class="l-eyebrow">音乐制作人 · 视频配乐</p><!-- ✏️ 改职业 -->
+    <h1 class="l-name">你好，<br>我是<br>你的名字</h1><!-- ✏️ 改名字 -->
+    <p class="l-desc">用声音构建世界，用旋律讲述故事。<br>音乐科技出身，专注音乐制作与影视配乐。</p><!-- ✏️ 改简介 -->
+    <button class="btn-enter" onclick="go('H')">进入 &nbsp;→</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     菜单大厅 HUB
+══════════════════════════════════════ -->
+<div class="page" id="H">
+  <div class="hub-nav">
+    <div class="nav-logo" onclick="go('L')" style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.12em;cursor:pointer;">YN</div><!-- ✏️ 改缩写 -->
+    <ul class="nav-links" style="display:flex;gap:28px;list-style:none;">
+      <li><a onclick="go('L')" style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);cursor:pointer;">← 首页</a></li>
+    </ul>
+  </div>
+  <div class="hub-grid">
+
+    <div class="hcard span2" onclick="go('W')">
+      <div class="hcard-accent" style="background:rgba(231,76,60,0.6);"></div>
+      <div class="hcard-bg" style="background:#0d0d0d;">
+        <svg style="position:absolute;bottom:0;left:0;right:0;opacity:0.12;width:100%;height:160px;" viewBox="0 0 800 160" preserveAspectRatio="none"><polyline points="0,80 20,60 40,40 60,70 80,30 100,80 120,55 140,20 160,75 180,50 200,85 220,60 240,35 260,75 280,55 300,70 320,30 340,80 360,60 380,75 400,40 420,70 440,55 460,80 480,40 500,65 520,25 540,80 560,60 580,75 600,40 620,70 640,55 660,80 680,40 700,65 720,25 740,75 760,60 780,70 800,80" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+      </div>
+      <div class="hcard-overlay"></div>
+      <div class="hcard-arrow">↗</div>
+      <div class="hcard-content">
+        <div class="hcard-label">Portfolio</div>
+        <div class="hcard-title">作品集</div>
+        <div class="hcard-sub">音乐制作 · 影视配乐 · 混音作品</div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="go('A')">
+      <div class="hcard-accent" style="background:rgba(100,149,237,0.5);"></div>
+      <div class="hcard-bg" style="background:#080c12;"></div>
+      <div class="hcard-overlay"></div>
+      <div class="hcard-arrow">↗</div>
+      <div class="hcard-content">
+        <div class="hcard-label">About</div>
+        <div class="hcard-title">自我介绍</div>
+        <div class="hcard-sub">关于我的故事</div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="go('E')">
+      <div class="hcard-accent" style="background:rgba(39,174,96,0.4);"></div>
+      <div class="hcard-bg" style="background:#080d0a;"></div>
+      <div class="hcard-overlay"></div>
+      <div class="hcard-arrow">↗</div>
+      <div class="hcard-content">
+        <div class="hcard-label">Experience</div>
+        <div class="hcard-title">工作经历</div>
+        <div class="hcard-sub">项目合作 · 实习经验</div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="go('EDU')">
+      <div class="hcard-accent" style="background:rgba(155,89,182,0.4);"></div>
+      <div class="hcard-bg" style="background:#0c080d;"></div>
+      <div class="hcard-overlay"></div>
+      <div class="hcard-arrow">↗</div>
+      <div class="hcard-content">
+        <div class="hcard-label">Education</div>
+        <div class="hcard-title">学习经历</div>
+        <div class="hcard-sub">音乐科技专业</div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="go('HOB')">
+      <div class="hcard-accent" style="background:rgba(241,196,15,0.35);"></div>
+      <div class="hcard-bg" style="background:#0d0c06;"></div>
+      <div class="hcard-overlay"></div>
+      <div class="hcard-arrow">↗</div>
+      <div class="hcard-content">
+        <div class="hcard-label">Interests</div>
+        <div class="hcard-title">兴趣爱好</div>
+        <div class="hcard-sub">音乐之外的世界</div>
+      </div>
+    </div>
+
+    <div class="hcard" onclick="go('C')">
+      <div class="hcard-accent" style="background:rgba(255,255,255,0.15);"></div>
+      <div class="hcard-bg" style="background:#0d0d0d;"></div>
+      <div class="hcard-overlay"></div>
+      <div class="hcard-arrow">↗</div>
+      <div class="hcard-content">
+        <div class="hcard-label">Contact</div>
+        <div class="hcard-title">联系我</div>
+        <div class="hcard-sub">合作 · 邀约 · 社交媒体</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     作品集 WORKS
+     ✏️ 修改：
+       - works-hero-title：置顶作品名称
+       - works-hero-meta：作品年份和类型
+       - 视频：把 <video> 标签的 src 换成你的视频文件路径
+       - 下方列表：填入你的作品名、类型、时长
+══════════════════════════════════════ -->
+<div class="dpage" id="W">
+  <div class="d-nav">
+    <button class="d-back" onclick="go('H')">← 返回</button>
+    <span class="d-breadcrumb">作品集 / Portfolio</span>
+  </div>
+  <div class="works-hero">
+    <div class="works-video-bg">
+      <!--
+        ✏️ 视频用法：
+        把下面这段注释删掉，替换成你的视频路径。
+        视频文件放在和 index.html 同一个文件夹里，比如叫 featured.mp4
+        
+        <video autoplay muted loop playsinline>
+          <source src="featured.mp4" type="video/mp4"/>
+        </video>
+        
+        如果视频放在子文件夹 videos/ 里：
+        <source src="videos/featured.mp4" type="video/mp4"/>
+        
+        也可以用 YouTube 嵌入（替换 iframe 中的 VIDEO_ID）：
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID&controls=0" style="position:absolute;inset:0;border:none;object-fit:cover;" allow="autoplay"></iframe>
+      -->
+      <div class="video-placeholder">
+        <div class="play-ring">
+          <svg viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg>
+        </div>
+        <p style="font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.1em;text-transform:uppercase;">在此放置你的视频</p>
+      </div>
+    </div>
+    <div class="works-overlay"></div>
+    <div class="works-hero-text">
+      <div class="now-playing"><span class="pulse"></span>正在预览</div>
+      <div class="works-hero-title">作品名称（置顶）</div><!-- ✏️ 改置顶作品名 -->
+      <div class="works-hero-meta">2024 · 影视配乐</div><!-- ✏️ 改年份和类型 -->
+    </div>
+  </div>
+
+  <!-- ✏️ 在这里添加/删除作品行，复制 work-row 块即可 -->
+  <div class="works-list">
+    <div class="work-row">
+      <div class="work-num">01</div>
+      <div class="work-thumb-sm">🎬</div>
+      <div class="work-info-sm">
+        <div class="work-title-sm">作品名称一</div><!-- ✏️ -->
+        <div class="work-tag">影视配乐 · 2024</div><!-- ✏️ -->
+      </div>
+      <div class="work-dur">3:42</div><!-- ✏️ 时长 -->
+      <div class="work-play-btn"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div>
+    </div>
+    <div class="work-row">
+      <div class="work-num">02</div>
+      <div class="work-thumb-sm">🎧</div>
+      <div class="work-info-sm">
+        <div class="work-title-sm">作品名称二</div>
+        <div class="work-tag">音乐制作 · 2024</div>
+      </div>
+      <div class="work-dur">4:15</div>
+      <div class="work-play-btn"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div>
+    </div>
+    <div class="work-row">
+      <div class="work-num">03</div>
+      <div class="work-thumb-sm">🎵</div>
+      <div class="work-info-sm">
+        <div class="work-title-sm">作品名称三</div>
+        <div class="work-tag">混音 · 2023</div>
+      </div>
+      <div class="work-dur">5:08</div>
+      <div class="work-play-btn"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div>
+    </div>
+    <div class="work-row">
+      <div class="work-num">04</div>
+      <div class="work-thumb-sm">🎹</div>
+      <div class="work-info-sm">
+        <div class="work-title-sm">作品名称四</div>
+        <div class="work-tag">电子音乐 · 2023</div>
+      </div>
+      <div class="work-dur">3:55</div>
+      <div class="work-play-btn"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     自我介绍 ABOUT
+     ✏️ 修改 txt-p 段落内容，<em> 标签内是高亮文字
+══════════════════════════════════════ -->
+<div class="dpage" id="A">
+  <div class="d-nav">
+    <button class="d-back" onclick="go('H')">← 返回</button>
+    <span class="d-breadcrumb">自我介绍 / About</span>
+  </div>
+  <div class="txt-hero">
+    <div class="txt-bg">ABOUT</div>
+    <div class="txt-overlay2"></div>
+    <div class="txt-hero-content">
+      <div class="txt-hero-label">About Me</div>
+      <div class="txt-hero-title">自我介绍</div>
+    </div>
+  </div>
+  <div class="txt-body">
+    <p class="txt-p">我是一位专注于<em>音乐制作与影视配乐</em>的创作者，毕业于音乐科技专业。相信声音是最直接的情感语言——它能让画面开口说话，让故事拥有呼吸。</p><!-- ✏️ -->
+    <p class="txt-p">从电子音乐的质感实验，到弦乐编排的细腻铺陈，我在不同音乐语境之间自由游走，寻找那个<em>刚好对的音符</em>。</p><!-- ✏️ -->
+    <p class="txt-p" style="color:rgba(255,255,255,0.25);font-size:13px;letter-spacing:0.05em;">
+      所在地 · 马来西亚 &nbsp;|&nbsp; 语言 · 中文 · 英文 · 马来语 &nbsp;|&nbsp; 状态 · 接受配乐邀约<!-- ✏️ -->
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     工作经历 EXPERIENCE
+     ✏️ 复制 tl-item2 块来增加条目
+══════════════════════════════════════ -->
+<div class="dpage" id="E">
+  <div class="d-nav">
+    <button class="d-back" onclick="go('H')">← 返回</button>
+    <span class="d-breadcrumb">工作经历 / Experience</span>
+  </div>
+  <div class="txt-hero">
+    <div class="txt-bg">WORK</div>
+    <div class="txt-overlay2"></div>
+    <div class="txt-hero-content">
+      <div class="txt-hero-label">Experience</div>
+      <div class="txt-hero-title">工作经历</div>
+    </div>
+  </div>
+  <div class="txt-body">
+    <div class="tl-item2">
+      <div class="tl-yr">2022 — 至今</div><!-- ✏️ 年份 -->
+      <div>
+        <div class="tl-r">自由配乐师 / 音乐制作人</div><!-- ✏️ 职位 -->
+        <div class="tl-p">独立工作室</div><!-- ✏️ 公司 -->
+        <div class="tl-d">承接影视、广告、游戏配乐项目，与多个独立导演及制作公司合作。</div><!-- ✏️ 描述 -->
+      </div>
+    </div>
+    <div class="tl-item2">
+      <div class="tl-yr">2021</div>
+      <div>
+        <div class="tl-r">音乐制作实习生</div>
+        <div class="tl-p">某录音 / 制作公司</div>
+        <div class="tl-d">参与商业音乐制作流程，负责编曲辅助与后期混音工作。</div>
+      </div>
+    </div>
+    <div class="tl-item2">
+      <div class="tl-yr">2020</div>
+      <div>
+        <div class="tl-r">驻场音效设计</div>
+        <div class="tl-p">剧场 / 演出机构</div>
+        <div class="tl-d">负责舞台演出现场音效设计与播放执行。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     学习经历 EDUCATION
+══════════════════════════════════════ -->
+<div class="dpage" id="EDU">
+  <div class="d-nav">
+    <button class="d-back" onclick="go('H')">← 返回</button>
+    <span class="d-breadcrumb">学习经历 / Education</span>
+  </div>
+  <div class="txt-hero">
+    <div class="txt-bg">EDU</div>
+    <div class="txt-overlay2"></div>
+    <div class="txt-hero-content">
+      <div class="txt-hero-label">Education</div>
+      <div class="txt-hero-title">学习经历</div>
+    </div>
+  </div>
+  <div class="txt-body">
+    <div class="tl-item2">
+      <div class="tl-yr">2018 — 2022</div><!-- ✏️ -->
+      <div>
+        <div class="tl-r">音乐科技学士学位</div><!-- ✏️ -->
+        <div class="tl-p">你的大学名称</div><!-- ✏️ -->
+        <div class="tl-d">主修音乐制作、声音设计与数字音频技术，毕业论文研究沉浸式音频体验。</div><!-- ✏️ -->
+      </div>
+    </div>
+    <div class="tl-item2">
+      <div class="tl-yr">2023</div>
+      <div>
+        <div class="tl-r">Dolby Atmos 混音认证</div>
+        <div class="tl-p">在线 / 专业培训</div>
+        <div class="tl-d">完成沉浸式音频制作与 Dolby Atmos 空间音频混音专业认证课程。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     兴趣爱好 HOBBIES
+     ✏️ 修改每个 hob 块的图标、名称、描述
+══════════════════════════════════════ -->
+<div class="dpage" id="HOB">
+  <div class="d-nav">
+    <button class="d-back" onclick="go('H')">← 返回</button>
+    <span class="d-breadcrumb">兴趣爱好 / Interests</span>
+  </div>
+  <div class="txt-hero">
+    <div class="txt-bg">LIFE</div>
+    <div class="txt-overlay2"></div>
+    <div class="txt-hero-content">
+      <div class="txt-hero-label">Beyond Music</div>
+      <div class="txt-hero-title">兴趣爱好</div>
+    </div>
+  </div>
+  <div class="hobby-g">
+    <div class="hob"><span class="hob-icon">🎬</span><div class="hob-n">电影</div><div class="hob-d">热爱艺术院线与实验电影，声音美学是我看电影时关注的第一件事。</div></div><!-- ✏️ -->
+    <div class="hob"><span class="hob-icon">🎮</span><div class="hob-n">游戏音效</div><div class="hob-d">沉迷研究游戏音效设计，把打游戏当做田野调查。</div></div><!-- ✏️ -->
+    <div class="hob"><span class="hob-icon">📻</span><div class="hob-n">采样收集</div><div class="hob-d">到处录制环境音，把城市的声音做成采样包。</div></div><!-- ✏️ -->
+    <div class="hob"><span class="hob-icon">🌙</span><div class="hob-n">深夜创作</div><div class="hob-d">最好的旋律总在深夜三点突然冒出来。</div></div><!-- ✏️ -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     联系方式 CONTACT
+     ✏️ 修改每行的平台名称和你的账号/链接
+══════════════════════════════════════ -->
+<div class="dpage" id="C">
+  <div class="d-nav">
+    <button class="d-back" onclick="go('H')">← 返回</button>
+    <span class="d-breadcrumb">联系我 / Contact</span>
+  </div>
+  <div class="txt-hero">
+    <div class="txt-bg">HELLO</div>
+    <div class="txt-overlay2"></div>
+    <div class="txt-hero-content">
+      <div class="txt-hero-label">Get in Touch</div>
+      <div class="txt-hero-title">一起做点什么</div>
+    </div>
+  </div>
+  <div style="padding-top:8px;">
+    <div class="clink2" onclick="location.href='mailto:your@email.com'"><!-- ✏️ 换邮箱 -->
+      <div class="clink2-l"><span class="clink2-ic">✉</span><div><div class="clink2-lb">电子邮件</div><div class="clink2-vl">your@email.com</div></div></div><!-- ✏️ -->
+      <span class="clink2-arr">↗</span>
+    </div>
+    <div class="clink2" onclick="location.href='https://instagram.com/yourhandle'"><!-- ✏️ 换链接 -->
+      <div class="clink2-l"><span class="clink2-ic">◎</span><div><div class="clink2-lb">Instagram</div><div class="clink2-vl">@yourhandle</div></div></div><!-- ✏️ -->
+      <span class="clink2-arr">↗</span>
+    </div>
+    <div class="clink2" onclick="location.href='https://soundcloud.com/yourname'"><!-- ✏️ -->
+      <div class="clink2-l"><span class="clink2-ic">▶</span><div><div class="clink2-lb">SoundCloud</div><div class="clink2-vl">soundcloud.com/yourname</div></div></div><!-- ✏️ -->
+      <span class="clink2-arr">↗</span>
+    </div>
+    <div class="clink2" onclick="location.href='https://youtube.com/@yourname'"><!-- ✏️ -->
+      <div class="clink2-l"><span class="clink2-ic">◈</span><div><div class="clink2-lb">YouTube</div><div class="clink2-vl">youtube.com/@yourname</div></div></div><!-- ✏️ -->
+      <span class="clink2-arr">↗</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function go(id){
+    document.querySelectorAll('.page,.dpage').forEach(p=>p.classList.remove('on'));
+    const t=document.getElementById(id);
+    if(t){t.classList.add('on');window.scrollTo(0,0);}
+  }
+</script>
+</body>
+</html>
